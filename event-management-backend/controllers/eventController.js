@@ -1,11 +1,58 @@
 const Event = require('../models/Event');
 const Registration = require('../models/Registration');
+const { enqueueJob } = require('../queue/jobQueue');
+
+const addDays = (date, days) => {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+};
+
+const scheduleEventJobs = async (event) => {
+  await enqueueJob({
+    type: 'SEND_EVENT_CREATED_EMAILS',
+    payload: { eventId: event._id.toString() },
+    runAt: new Date()
+  });
+
+  const deadline = new Date(event.registrationDeadline);
+  const reminderDays = [7, 3, 1];
+
+  for (const daysLeft of reminderDays) {
+    const runAt = addDays(deadline, -daysLeft);
+    if (runAt > new Date()) {
+      await enqueueJob({
+        type: 'SEND_REGISTRATION_DEADLINE_REMINDERS',
+        payload: { eventId: event._id.toString(), daysLeft },
+        runAt
+      });
+    }
+  }
+
+  const attendanceRunAt = addDays(new Date(event.date), -1);
+  if (attendanceRunAt > new Date()) {
+    await enqueueJob({
+      type: 'SEND_EVENT_ATTENDANCE_REMINDERS',
+      payload: { eventId: event._id.toString() },
+      runAt: attendanceRunAt
+    });
+  }
+};
 
 const createEvent = async (req, res) => {
   try {
-    const { title, description, venue, date, bannerImage } = req.body;
+    const {
+      title,
+      category,
+      description,
+      venue,
+      date,
+      registrationDeadline,
+      specialInstructions,
+      bannerImage
+    } = req.body;
 
-    if (!title || !description || !venue || !date) {
+    if (!title || !category || !description || !venue || !date || !registrationDeadline) {
       return res.status(400).json({
         status: 'error',
         message: 'Please provide all required fields'
@@ -14,12 +61,17 @@ const createEvent = async (req, res) => {
 
     const event = await Event.create({
       title,
+      category,
       description,
       venue,
       date,
+      registrationDeadline,
+      specialInstructions,
       bannerImage,
       organizer: req.user._id
     });
+
+    await scheduleEventJobs(event);
 
     res.status(201).json({
       status: 'success',
@@ -35,9 +87,57 @@ const createEvent = async (req, res) => {
   }
 };
 
+const getRegisteredStudentsForEvent = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Event not found'
+      });
+    }
+
+    const myRegistration = await Registration.findOne({
+      event: eventId,
+      student: req.user._id,
+      status: { $in: ['pending', 'approved'] }
+    });
+
+    if (!myRegistration) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'You must be registered for this event to view registered students'
+      });
+    }
+
+    const registrations = await Registration.find({
+      event: eventId,
+      status: { $in: ['pending', 'approved'] }
+    }).populate('student', 'name usn');
+
+    const students = registrations
+      .map((r) => r.student)
+      .filter(Boolean);
+
+    res.status(200).json({
+      status: 'success',
+      results: students.length,
+      data: { students }
+    });
+  } catch (error) {
+    console.error('Get registered students error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Error fetching registered students'
+    });
+  }
+};
+
 const getAllEvents = async (req, res) => {
   try {
-    const { search, organizer } = req.query;
+    const { search, organizer, category, venue, dateFrom, dateTo } = req.query;
     let query = {};
 
     if (search) {
@@ -46,6 +146,20 @@ const getAllEvents = async (req, res) => {
 
     if (organizer === 'me' && req.user) {
       query.organizer = req.user._id;
+    }
+
+    if (category) {
+      query.category = category;
+    }
+
+    if (venue) {
+      query.venue = venue;
+    }
+
+    if (dateFrom || dateTo) {
+      query.date = {};
+      if (dateFrom) query.date.$gte = new Date(dateFrom);
+      if (dateTo) query.date.$lte = new Date(dateTo);
     }
 
     const events = await Event.find(query)
@@ -109,11 +223,50 @@ const updateEvent = async (req, res) => {
       });
     }
 
-    const updatedEvent = await Event.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const allowedFields = [
+      'title',
+      'category',
+      'description',
+      'venue',
+      'date',
+      'registrationDeadline',
+      'specialInstructions',
+      'bannerImage'
+    ];
+
+    const updates = {};
+    for (const key of allowedFields) {
+      if (Object.prototype.hasOwnProperty.call(req.body, key)) {
+        updates[key] = req.body[key];
+      }
+    }
+
+    const changes = [];
+    const changeFields = ['title', 'category', 'description', 'venue', 'date', 'registrationDeadline', 'specialInstructions'];
+    for (const field of changeFields) {
+      if (Object.prototype.hasOwnProperty.call(updates, field)) {
+        const before = event[field];
+        const after = updates[field];
+        const beforeStr = before instanceof Date ? before.toISOString() : String(before ?? '');
+        const afterStr = after instanceof Date ? after.toISOString() : String(after ?? '');
+        if (beforeStr !== afterStr) {
+          changes.push({ field, before: beforeStr, after: afterStr });
+        }
+      }
+    }
+
+    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true
+    });
+
+    if (changes.length > 0) {
+      await enqueueJob({
+        type: 'SEND_EVENT_UPDATE_EMAILS',
+        payload: { eventId: updatedEvent._id.toString(), changes },
+        runAt: new Date()
+      });
+    }
 
     res.status(200).json({
       status: 'success',
@@ -172,6 +325,13 @@ const registerForEvent = async (req, res) => {
       return res.status(404).json({
         status: 'error',
         message: 'Event not found'
+      });
+    }
+
+    if (event.registrationDeadline && new Date() > new Date(event.registrationDeadline)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Registration deadline has passed for this event'
       });
     }
 
@@ -372,6 +532,7 @@ module.exports = {
   deleteEvent,
   registerForEvent,
   getEventRegistrations,
+  getRegisteredStudentsForEvent,
   getMyRegistrations,
   cancelRegistration,
   approveRegistration,

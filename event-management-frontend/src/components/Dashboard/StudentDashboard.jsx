@@ -12,6 +12,12 @@ const StudentDashboard = () => {
   const [events, setEvents] = useState([]);
   const [myRegistrations, setMyRegistrations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    category: '',
+    venue: '',
+    dateFrom: '',
+    dateTo: ''
+  });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
 
@@ -20,10 +26,21 @@ const StudentDashboard = () => {
     fetchMyRegistrations();
   }, []);
 
+  useEffect(() => {
+    fetchEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.category, filters.venue, filters.dateFrom, filters.dateTo]);
+
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/events');
+      const params = {};
+      if (filters.category) params.category = filters.category;
+      if (filters.venue) params.venue = filters.venue;
+      if (filters.dateFrom) params.dateFrom = filters.dateFrom;
+      if (filters.dateTo) params.dateTo = filters.dateTo;
+
+      const response = await api.get('/events', { params });
       setEvents(response.data.data.events);
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -67,6 +84,10 @@ const StudentDashboard = () => {
   const handleLogout = () => {
     clearAuthData();
     navigate('/login');
+  };
+
+  const handleViewRegisteredStudents = (eventId) => {
+    navigate(`/events/${eventId}/registered-students`);
   };
 
   const isEventRegistered = (eventId) => {
@@ -124,6 +145,35 @@ const StudentDashboard = () => {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+            <input
+              type="text"
+              className="input-field"
+              placeholder="Filter by category"
+              value={filters.category}
+              onChange={(e) => setFilters((p) => ({ ...p, category: e.target.value }))}
+            />
+            <input
+              type="text"
+              className="input-field"
+              placeholder="Filter by venue"
+              value={filters.venue}
+              onChange={(e) => setFilters((p) => ({ ...p, venue: e.target.value }))}
+            />
+            <input
+              type="date"
+              className="input-field"
+              value={filters.dateFrom}
+              onChange={(e) => setFilters((p) => ({ ...p, dateFrom: e.target.value }))}
+            />
+            <input
+              type="date"
+              className="input-field"
+              value={filters.dateTo}
+              onChange={(e) => setFilters((p) => ({ ...p, dateTo: e.target.value }))}
+            />
+          </div>
+
           <div className="flex gap-4 border-b border-gray-200">
             <button
               onClick={() => setActiveTab('all')}
@@ -176,6 +226,7 @@ const StudentDashboard = () => {
                             event={event}
                             onRegister={handleRegister}
                             onCancel={handleCancelRegistration}
+                            onViewRegisteredStudents={handleViewRegisteredStudents}
                             isRegistered={registered}
                             isOrganizer={false}
                           />
@@ -210,6 +261,7 @@ const StudentDashboard = () => {
                         <EventCard
                           event={event}
                           onCancel={handleCancelRegistration}
+                          onViewRegisteredStudents={handleViewRegisteredStudents}
                           isRegistered={true}
                           isOrganizer={false}
                         />

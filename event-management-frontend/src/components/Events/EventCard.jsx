@@ -1,6 +1,6 @@
-import { Calendar, MapPin, User } from 'lucide-react';
+import { Calendar, MapPin, User, Tag, Clock, Users } from 'lucide-react';
 
-const EventCard = ({ event, onRegister, onCancel, onEdit, onDelete, onViewRegistrations, isRegistered, isOrganizer }) => {
+const EventCard = ({ event, onRegister, onCancel, onEdit, onDelete, onViewRegistrations, onViewRegisteredStudents, isRegistered, isOrganizer }) => {
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {
       weekday: 'short',
@@ -33,6 +33,20 @@ const EventCard = ({ event, onRegister, onCancel, onEdit, onDelete, onViewRegist
             <span>{formatDate(event.date)}</span>
           </div>
 
+          {event.registrationDeadline && (
+            <div className="flex items-center text-gray-600">
+              <Clock className="w-4 h-4 mr-2" />
+              <span>Deadline: {formatDate(event.registrationDeadline)}</span>
+            </div>
+          )}
+
+          {event.category && (
+            <div className="flex items-center text-gray-600">
+              <Tag className="w-4 h-4 mr-2" />
+              <span>{event.category}</span>
+            </div>
+          )}
+
           <div className="flex items-center text-gray-600">
             <MapPin className="w-4 h-4 mr-2" />
             <span>{event.venue}</span>
@@ -57,12 +71,23 @@ const EventCard = ({ event, onRegister, onCancel, onEdit, onDelete, onViewRegist
           )}
 
           {!isOrganizer && isRegistered && (
-            <button
-              onClick={() => onCancel(event._id)}
-              className="flex-1 btn-danger"
-            >
-              Cancel Registration
-            </button>
+            <>
+              <button
+                onClick={() => onCancel(event._id)}
+                className="flex-1 btn-danger"
+              >
+                Cancel Registration
+              </button>
+              {onViewRegisteredStudents && (
+                <button
+                  onClick={() => onViewRegisteredStudents(event._id)}
+                  className="btn-secondary text-sm px-3"
+                  title="View registered students"
+                >
+                  <Users className="w-4 h-4" />
+                </button>
+              )}
+            </>
           )}
 
           {isOrganizer && (

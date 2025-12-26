@@ -8,6 +8,11 @@ const eventSchema = new mongoose.Schema({
     minlength: [3, 'Title must be at least 3 characters'],
     maxlength: [100, 'Title cannot exceed 100 characters']
   },
+  category: {
+    type: String,
+    trim: true,
+    required: [function() { return this.isNew; }, 'Event category is required']
+  },
   description: {
     type: String,
     required: [true, 'Event description is required'],
@@ -30,6 +35,23 @@ const eventSchema = new mongoose.Schema({
       },
       message: 'Event date must be in the future'
     }
+  },
+  registrationDeadline: {
+    type: Date,
+    required: [function() { return this.isNew; }, 'Registration deadline is required'],
+    validate: {
+      validator: function(value) {
+        if (!this.date) return true;
+        return value < this.date;
+      },
+      message: 'Registration deadline must be before the event date'
+    }
+  },
+  specialInstructions: {
+    type: String,
+    trim: true,
+    maxlength: [1000, 'Special instructions cannot exceed 1000 characters'],
+    default: ''
   },
   bannerImage: {
     type: String,
@@ -59,7 +81,10 @@ eventSchema.virtual('registrationCount', {
 
 // Index for faster queries
 eventSchema.index({ date: 1 });
+eventSchema.index({ registrationDeadline: 1 });
 eventSchema.index({ organizer: 1 });
+eventSchema.index({ category: 1 });
+eventSchema.index({ venue: 1 });
 eventSchema.index({ title: 'text', description: 'text' });
 
 module.exports = mongoose.model('Event', eventSchema);

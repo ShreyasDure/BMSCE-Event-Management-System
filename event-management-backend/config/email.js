@@ -8,6 +8,31 @@ if (!process.env.RESEND_API_KEY) {
 // Single Resend client instance
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const sendEmail = async ({ to, subject, html }) => {
+  try {
+    const fromEmail = process.env.RESEND_FROM || 'onboarding@resend.dev';
+
+    const result = await resend.emails.send({
+      from: fromEmail,
+      to,
+      subject,
+      html
+    });
+
+    if (result.error) {
+      throw new Error(result.error.message || JSON.stringify(result.error));
+    }
+
+    if (!result.data || !result.data.id) {
+      throw new Error('Invalid response from Resend API');
+    }
+
+    return { success: true, messageId: result.data.id };
+  } catch (error) {
+    return { success: false, error: error.message || 'Failed to send email' };
+  }
+};
+
 // Send password reset email
 const sendPasswordResetEmail = async (email, resetUrl, userName) => {
   try {
@@ -138,7 +163,7 @@ const sendPasswordResetEmail = async (email, resetUrl, userName) => {
             <div class="footer">
               <p>This is an automated email from BMSCE Event Management System.</p>
               <p>Please do not reply to this email.</p>
-              <p>&copy; 2024 BMS College of Engineering. All rights reserved.</p>
+              <p>&copy; 2025 BMSCE Event Management. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -171,4 +196,4 @@ const sendPasswordResetEmail = async (email, resetUrl, userName) => {
   }
 };
 
-module.exports = { sendPasswordResetEmail };
+module.exports = { sendEmail, sendPasswordResetEmail };

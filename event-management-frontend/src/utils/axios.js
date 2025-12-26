@@ -26,7 +26,15 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+
+      const path = window.location.pathname || '';
+      const isAuthPage = path === '/login' || path === '/signup' || path === '/forgot-password';
+
+      if (!isAuthPage) {
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 5000);
+      }
     }
     return Promise.reject(error);
   }

@@ -29,6 +29,17 @@ const userSchema = new mongoose.Schema({
       message: 'USN must start with 1, be 10 characters, and contain only letters and numbers'
     }
   },
+  department: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  year: {
+    type: Number,
+    min: [1, 'Year must be between 1 and 5'],
+    max: [5, 'Year must be between 1 and 5'],
+    default: undefined
+  },
   email: {
     type: String,
     required: [true, 'Email is required'],

@@ -1,43 +1,43 @@
 import { motion } from 'framer-motion';
-import { Calendar, Bell, Users, BarChart3, CheckCircle, MessageSquare } from 'lucide-react';
+import { Calendar, Mail, Users, Shield, Clock, CheckCircle } from 'lucide-react';
 
 const Features = () => {
   const features = [
     {
       icon: Calendar,
       title: 'Event Discovery',
-      description: 'Browse through all upcoming campus events with advanced filtering options.',
-      color: 'bg-blue-500'
+      description: 'Browse and filter through all upcoming campus events by category, date, and venue.',
+      color: 'from-blue-500 to-cyan-500'
     },
     {
-      icon: Bell,
-      title: 'Smart Notifications',
-      description: 'Never miss an event with personalized reminders and real-time updates.',
-      color: 'bg-indigo-500'
+      icon: Mail,
+      title: 'Email Notifications',
+      description: 'Receive automated email updates for event registrations and approval status.',
+      color: 'from-indigo-500 to-purple-500'
     },
     {
       icon: Users,
-      title: 'Easy Registration',
-      description: 'One-click registration with instant confirmation and QR code tickets.',
-      color: 'bg-purple-500'
+      title: 'Role-Based Access',
+      description: 'Dedicated interfaces for Students and Organizers with tailored permissions.',
+      color: 'from-purple-500 to-pink-500'
     },
     {
-      icon: BarChart3,
-      title: 'Analytics Dashboard',
-      description: 'Track attendance, engagement, and event performance with detailed insights.',
-      color: 'bg-pink-500'
+      icon: Shield,
+      title: 'BMSCE Authentication',
+      description: 'Secure login with BMSCE email verification for campus community only.',
+      color: 'from-pink-500 to-rose-500'
     },
     {
       icon: CheckCircle,
-      title: 'Approval System',
-      description: 'Organizers can review and approve registrations to manage capacity.',
-      color: 'bg-rose-500'
+      title: 'Registration Management',
+      description: 'Organizers can approve, reject, and manage event registrations with capacity control.',
+      color: 'from-rose-500 to-orange-500'
     },
     {
-      icon: MessageSquare,
-      title: 'Feedback System',
-      description: 'Collect valuable feedback from attendees to improve future events.',
-      color: 'bg-orange-500'
+      icon: Clock,
+      title: 'Registration Deadlines',
+      description: 'Set and manage registration deadlines to control event capacity and planning.',
+      color: 'from-orange-500 to-yellow-500'
     }
   ];
 
@@ -62,24 +62,25 @@ const Features = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -8, scale: 1.02 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ scale: 1.05 }}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all"
+              transition={{ duration: 0.4, delay: index * 0.08, hover: { duration: 0.3 } }}
+              className="group relative bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all cursor-pointer"
             >
-              <div className={`${feature.color} w-16 h-16 rounded-2xl flex items-center justify-center mb-6`}>
-                <feature.icon className="w-8 h-8 text-white" />
+              <div className={`w-12 h-12 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
+                <feature.icon className="w-6 h-6 text-white drop-shadow-md" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-sm text-gray-600 leading-relaxed">
                 {feature.description}
               </p>
             </motion.div>

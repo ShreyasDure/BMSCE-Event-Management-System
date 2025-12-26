@@ -8,6 +8,7 @@ const {
   deleteEvent,
   registerForEvent,
   getEventRegistrations,
+  getRegisteredStudentsForEvent,
   getMyRegistrations,
   cancelRegistration,
   approveRegistration,
@@ -19,6 +20,7 @@ const router = express.Router();
 router.post('/', protect, authorize('organizer'), createEvent);
 router.get('/', getAllEvents);
 router.get('/my-registrations', protect, authorize('student'), getMyRegistrations);
+router.get('/:eventId/registered-students', protect, authorize('student'), getRegisteredStudentsForEvent);
 router.get('/:id', getEventById);
 router.put('/:id', protect, authorize('organizer'), updateEvent);
 router.delete('/:id', protect, authorize('organizer'), deleteEvent);

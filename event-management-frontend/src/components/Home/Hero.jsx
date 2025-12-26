@@ -1,127 +1,83 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Calendar, Users, TrendingUp, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Hero = () => {
-  return (
-    <section id="home" className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-center lg:text-left"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center space-x-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>BMSCE College Event Management</span>
-            </motion.div>
+  const heroImageUrl = `${import.meta.env.BASE_URL}images/college-event-hero.png`;
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-              Connect.{' '}
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Engage.
-              </span>{' '}
-              Celebrate.
+  return (
+    <section
+  id="home"
+  className="relative min-h-[calc(100svh-4rem)] sm:min-h-[calc(100svh-5rem)] flex items-center px-6 sm:px-8 lg:px-12 pt-16 sm:pt-20 overflow-hidden"
+  style={{
+    backgroundImage:
+      `linear-gradient(to right, rgba(0, 0, 0, 0.70) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0) 100%), url(${heroImageUrl})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  }}
+>
+
+      <div className="max-w-7xl mx-auto relative z-10 w-full">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* Left Content - positioned at 40-45% */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5 text-white font-poppins order-2 lg:order-1"
+          >
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-5 leading-[1.1] font-poppins">
+              Manage College Events.{" "}
+              <span className="relative inline-block">
+                <span className="relative z-10 text-white">
+                  Seamlessly.
+                </span>
+                <motion.span
+                  initial={{ width: 0 }}
+                  animate={{ width: '85%' }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
+                  className="absolute bottom-1 left-0 h-2 bg-orange-400/60 -z-0"
+                />
+              </span>
             </h1>
 
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              Your ultimate platform for discovering, organizing, and managing campus events. 
-              Join the movement of making college life more vibrant and connected.
+            <p className="text-lg sm:text-xl text-white/90 mb-8 leading-relaxed max-w-[600px] mx-auto lg:mx-0 font-medium font-open-sans">
+              Plan, organize, and run tech fests, cultural events, and workshops from registrations to on-ground execution, all in one platform.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-10">
               <Link
-                to="/signup"
-                className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full hover:shadow-2xl hover:scale-105 transition-all font-semibold text-lg inline-flex items-center justify-center"
+                to="/events"
+                className="group relative bg-gradient-to-r from-blue-600 to-blue-700 text-white px-7 py-3.5 rounded-xl hover:shadow-xl hover:shadow-blue-500/30 hover:scale-[1.02] transition-all font-semibold text-base inline-flex items-center justify-center overflow-hidden"
               >
-                Get Started Free
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <span className="relative z-10 flex items-center">
+                  Get Started
+                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-800 opacity-0 group-hover:opacity-100 transition-opacity"
+                  initial={false}
+                />
               </Link>
               <a
-                href="#features"
-                className="bg-white text-gray-700 px-8 py-4 rounded-full border-2 border-gray-200 hover:border-blue-600 hover:text-blue-600 transition-all font-semibold text-lg"
+                href="#events"
+                className="bg-transparent text-white px-7 py-3.5 rounded-xl border-2 border-white/30 hover:border-white hover:text-white hover:bg-white/10 transition-all font-semibold text-base"
               >
-                Learn More
+                Explore Events
               </a>
             </div>
 
-            <div className="mt-12 grid grid-cols-3 gap-8 max-w-md mx-auto lg:mx-0">
-              <div>
-                <p className="text-3xl font-bold text-blue-600">50+</p>
-                <p className="text-sm text-gray-600">Events Hosted</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-indigo-600">200+</p>
-                <p className="text-sm text-gray-600">Active Students</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-purple-600">10+</p>
-                <p className="text-sm text-gray-600">Organizers</p>
-              </div>
-            </div>
-          </motion.div>
+                      </motion.div>
 
-          {/* Right Content - Illustration */}
+                    {/* Right Content - Empty to showcase background image */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="relative"
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="relative lg:col-span-7 order-1 lg:order-2"
           >
-            <div className="relative w-full h-[500px]">
-              {/* Floating Cards Animation */}
-              <motion.div
-                animate={{ y: [0, -20, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute top-0 right-0 bg-white rounded-2xl shadow-2xl p-6 w-72"
-              >
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full"></div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Tech Fest 2025</p>
-                    <p className="text-sm text-gray-500">Tomorrow, 10:00 AM</p>
-                  </div>
-                </div>
-                <p className="text-gray-600 text-sm">Join us for an amazing tech event...</p>
-                <button className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-                  Register Now
-                </button>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, 20, 0] }}
-                transition={{ duration: 5, repeat: Infinity, delay: 0.5 }}
-                className="absolute bottom-0 left-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-2xl p-6 w-64 text-white"
-              >
-                <div className="text-4xl font-bold mb-2">150+</div>
-                <p className="text-indigo-100">Students Registered</p>
-                <div className="flex -space-x-2 mt-4">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="w-8 h-8 bg-white/30 rounded-full border-2 border-white"
-                    ></div>
-                  ))}
-                </div>
-              </motion.div>
-
-              <motion.div
-                animate={{ rotate: [0, 5, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="absolute top-1/3 left-1/4 bg-gradient-to-br from-pink-400 to-rose-500 rounded-2xl shadow-xl p-4 w-48"
-              >
-                <p className="text-white font-semibold text-sm">🎉 New Event!</p>
-                <p className="text-white/80 text-xs mt-1">Cultural Night - Friday</p>
-              </motion.div>
-            </div>
+            <div className="hero-image-spacer"></div>
           </motion.div>
         </div>
       </div>

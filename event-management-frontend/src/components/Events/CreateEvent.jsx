@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
-import { X, Calendar, MapPin, FileText, Image } from 'lucide-react';
+import { X, Calendar, MapPin, FileText, Image, Tag, Clock, Info } from 'lucide-react';
 
 const CreateEvent = ({ onClose, onSuccess, editEvent = null }) => {
   const [formData, setFormData] = useState({
     title: '',
+    category: '',
     description: '',
     venue: '',
     date: '',
+    registrationDeadline: '',
+    specialInstructions: '',
     bannerImage: ''
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -16,9 +20,14 @@ const CreateEvent = ({ onClose, onSuccess, editEvent = null }) => {
     if (editEvent) {
       setFormData({
         title: editEvent.title,
+        category: editEvent.category || '',
         description: editEvent.description,
         venue: editEvent.venue,
         date: new Date(editEvent.date).toISOString().slice(0, 16),
+        registrationDeadline: editEvent.registrationDeadline
+          ? new Date(editEvent.registrationDeadline).toISOString().slice(0, 16)
+          : '',
+        specialInstructions: editEvent.specialInstructions || '',
         bannerImage: editEvent.bannerImage || ''
       });
     }
@@ -81,8 +90,27 @@ const CreateEvent = ({ onClose, onSuccess, editEvent = null }) => {
                 type="text"
                 required
                 className="input-field pl-10"
-                placeholder="Tech Conference 2024"
+                placeholder="Tech Conference 2025"
                 value={formData.title}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+              Category *
+            </label>
+            <div className="relative">
+              <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                id="category"
+                name="category"
+                type="text"
+                required
+                className="input-field pl-10"
+                placeholder="Technical / Cultural / Workshop"
+                value={formData.category}
                 onChange={handleChange}
               />
             </div>
@@ -138,6 +166,45 @@ const CreateEvent = ({ onClose, onSuccess, editEvent = null }) => {
                 value={formData.date}
                 onChange={handleChange}
                 min={new Date().toISOString().slice(0, 16)}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="registrationDeadline" className="block text-sm font-medium text-gray-700 mb-2">
+              Registration Deadline *
+            </label>
+            <div className="relative">
+              <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                id="registrationDeadline"
+                name="registrationDeadline"
+                type="datetime-local"
+                required
+                className="input-field pl-10"
+                value={formData.registrationDeadline}
+                onChange={handleChange}
+                min={new Date().toISOString().slice(0, 16)}
+                max={formData.date || undefined}
+              />
+            </div>
+            <p className="mt-1 text-xs text-gray-500">Must be before the event date/time.</p>
+          </div>
+
+          <div>
+            <label htmlFor="specialInstructions" className="block text-sm font-medium text-gray-700 mb-2">
+              Special Instructions
+            </label>
+            <div className="relative">
+              <Info className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <textarea
+                id="specialInstructions"
+                name="specialInstructions"
+                rows="3"
+                className="input-field resize-none pl-10"
+                placeholder="Bring your college ID card, laptop, etc."
+                value={formData.specialInstructions}
+                onChange={handleChange}
               />
             </div>
           </div>

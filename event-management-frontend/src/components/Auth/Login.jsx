@@ -11,20 +11,47 @@ const Login = () => {
     password: ''
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [formError, setFormError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({
+    email: '',
+    password: ''
+  });
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
-    setError('');
+    setFormError('');
+    setFieldErrors((prev) => ({
+      ...prev,
+      [name]: ''
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setFormError('');
+
+    const nextFieldErrors = {
+      email: '',
+      password: ''
+    };
+
+    if (!formData.email) {
+      nextFieldErrors.email = 'Email is required';
+    }
+    if (!formData.password) {
+      nextFieldErrors.password = 'Password is required';
+    }
+
+    if (nextFieldErrors.email || nextFieldErrors.password) {
+      setFieldErrors(nextFieldErrors);
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await api.post('/auth/login', formData);
@@ -39,7 +66,8 @@ const Login = () => {
         navigate('/organizer-dashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      const message = err.response?.data?.message || 'Login failed. Please try again.';
+      setFormError(message);
     } finally {
       setLoading(false);
     }
@@ -66,9 +94,9 @@ const Login = () => {
             <p className="mt-2 text-gray-600">Sign in to BMSCE Event Management</p>
           </div>
 
-          {error && (
+          {formError && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-              {error}
+              {formError}
             </div>
           )}
 
@@ -84,12 +112,15 @@ const Login = () => {
                   name="email"
                   type="email"
                   required
-                  className="input-field pl-10"
+                  className={`input-field pl-10 ${fieldErrors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
                   placeholder="you@bmsce.ac.in"
                   value={formData.email}
                   onChange={handleChange}
                 />
               </div>
+              {fieldErrors.email && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
+              )}
             </div>
 
             <div>
@@ -103,16 +134,19 @@ const Login = () => {
                   name="password"
                   type="password"
                   required
-                  className="input-field pl-10"
+                  className={`input-field pl-10 ${fieldErrors.password ? 'border-red-500 focus:ring-red-500' : ''}`}
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
                 />
               </div>
+              {fieldErrors.password && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>
+              )}
             </div>
 
-            <div class="flex justify-center mb-6">
-             <a class="text-sm font-medium text-blue-600 hover:text-blue-700" href="/forgot-password">
+            <div className="flex justify-center mb-6">
+             <a className="text-sm font-medium text-blue-600 hover:text-blue-700" href="/forgot-password">
                Forgot Password?
              </a>
             </div>

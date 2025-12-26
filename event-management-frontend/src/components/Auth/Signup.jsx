@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserPlus, Mail, Lock, User, Users, ArrowLeft, CreditCard, Key } from 'lucide-react';
 import api from '../../utils/axios';
@@ -16,9 +16,19 @@ const Signup = () => {
     role: 'student'
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [formError, setFormError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
   const [usnError, setUsnError] = useState('');
   const [organizerCodeError, setOrganizerCodeError] = useState('');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const validateUSN = (usn) => {
     // USN rules for students only:
@@ -58,7 +68,11 @@ const Signup = () => {
     const { name, value } = e.target;
     
     // Clear errors when user types
-    setError('');
+    setFormError('');
+    setFieldErrors((prev) => ({
+      ...prev,
+      [name]: ''
+    }));
     
     // Handle role change - reset conditional fields
     if (name === 'role') {
@@ -103,11 +117,45 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setFormError('');
+
+    const nextFieldErrors = {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    };
+
+    if (!formData.name) {
+      nextFieldErrors.name = 'Full name is required';
+    }
+    if (!formData.email) {
+      nextFieldErrors.email = 'Email is required';
+    }
+    if (!formData.password) {
+      nextFieldErrors.password = 'Password is required';
+    }
+    if (!formData.confirmPassword) {
+      nextFieldErrors.confirmPassword = 'Confirm password is required';
+    }
+
+    if (
+      nextFieldErrors.name ||
+      nextFieldErrors.email ||
+      nextFieldErrors.password ||
+      nextFieldErrors.confirmPassword
+    ) {
+      setFieldErrors(nextFieldErrors);
+      setLoading(false);
+      return;
+    }
 
     // Validate BMSCE email domain
     if (!formData.email.endsWith('@bmsce.ac.in')) {
-      setError('Please use your BMSCE email address (@bmsce.ac.in)');
+      setFieldErrors((prev) => ({
+        ...prev,
+        email: 'Please use your BMSCE email address (@bmsce.ac.in)'
+      }));
       setLoading(false);
       return;
     }
@@ -133,13 +181,19 @@ const Signup = () => {
 
     // Password validation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setFieldErrors((prev) => ({
+        ...prev,
+        confirmPassword: 'Passwords do not match'
+      }));
       setLoading(false);
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+    if (formData.password.length < 8) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        password: 'Password must be at least 8 characters'
+      }));
       setLoading(false);
       return;
     }
@@ -158,14 +212,29 @@ const Signup = () => {
         navigate('/organizer-dashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed. Please try again.');
+      const message = err.response?.data?.message || 'Signup failed. Please try again.';
+      const serverField = err.response?.data?.field;
+
+      if (serverField && Object.prototype.hasOwnProperty.call(fieldErrors, serverField)) {
+        setFieldErrors((prev) => ({
+          ...prev,
+          [serverField]: message
+        }));
+      } else if (message.toLowerCase().includes('password')) {
+        setFieldErrors((prev) => ({
+          ...prev,
+          password: message
+        }));
+      } else {
+        setFormError(message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div id="top" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         <Link
           to="/"
@@ -184,9 +253,9 @@ const Signup = () => {
             <p className="mt-2 text-gray-600">Join BMSCE Event Management today</p>
           </div>
 
-          {error && (
+          {formError && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-              {error}
+              {formError}
             </div>
           )}
 
@@ -203,12 +272,15 @@ const Signup = () => {
                   name="name"
                   type="text"
                   required
-                  className="input-field pl-10"
+                  className={`input-field pl-10 ${fieldErrors.name ? 'border-red-500 focus:ring-red-500' : ''}`}
                   placeholder="Your Name"
                   value={formData.name}
                   onChange={handleChange}
                 />
               </div>
+              {fieldErrors.name && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p>
+              )}
             </div>
 
             {/* Role Selection */}
@@ -303,12 +375,15 @@ const Signup = () => {
                   name="email"
                   type="email"
                   required
-                  className="input-field pl-10"
+                  className={`input-field pl-10 ${fieldErrors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
                   placeholder="yourname@bmsce.ac.in"
                   value={formData.email}
                   onChange={handleChange}
                 />
               </div>
+              {fieldErrors.email && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
+              )}
               <p className="mt-1 text-xs text-gray-500">
                 Use your official BMSCE email address
               </p>
@@ -326,12 +401,15 @@ const Signup = () => {
                   name="password"
                   type="password"
                   required
-                  className="input-field pl-10"
+                  className={`input-field pl-10 ${fieldErrors.password ? 'border-red-500 focus:ring-red-500' : ''}`}
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
                 />
               </div>
+              {fieldErrors.password && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>
+              )}
             </div>
 
             {/* Confirm Password */}
@@ -346,12 +424,15 @@ const Signup = () => {
                   name="confirmPassword"
                   type="password"
                   required
-                  className="input-field pl-10"
+                  className={`input-field pl-10 ${fieldErrors.confirmPassword ? 'border-red-500 focus:ring-red-500' : ''}`}
                   placeholder="••••••••"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                 />
               </div>
+              {fieldErrors.confirmPassword && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.confirmPassword}</p>
+              )}
             </div>
 
             {/* Submit Button */}

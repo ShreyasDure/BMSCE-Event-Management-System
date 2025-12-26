@@ -1,7 +1,14 @@
-import { Calendar, Mail, MapPin, Phone, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Mail, MapPin, Phone, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Footer = () => {
+  const navigate = useNavigate();
+
+  const handleLinkClick = (to) => {
+    navigate(to);
+    window.scrollTo(0, 0);
+  };
   return (
     <footer className="bg-gray-900 text-gray-300 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -9,25 +16,27 @@ const Footer = () => {
           {/* About */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-lg">
-                <Calendar className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-white">BMSCE Event Management</span>
+              <img
+                src="/images/bmsce-logo.png"
+                alt="BMSCE logo"
+                className="h-[2em] w-auto flex-shrink-0"
+              />
+              <span className="text-xl font-bold text-white leading-tight">BMSCE Event Management</span>
             </div>
             <p className="text-gray-400 mb-4">
               Your ultimate platform for discovering and managing college events at BMSCE.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="hover:text-blue-500 transition-colors">
+              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="hover:text-blue-500 transition-colors">
+              <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="hover:text-blue-500 transition-colors">
+              <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="hover:text-blue-500 transition-colors">
+              <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">
                 <Linkedin className="w-5 h-5" />
               </a>
             </div>
@@ -38,16 +47,40 @@ const Footer = () => {
             <h3 className="text-white font-bold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#home" className="hover:text-blue-500 transition-colors">Home</a>
+                <Link to="/" className="hover:text-blue-500 transition-colors" onClick={() => window.scrollTo(0, 0)}>Home</Link>
               </li>
               <li>
-                <a href="#features" className="hover:text-blue-500 transition-colors">Features</a>
+                <Link to="/" className="hover:text-blue-500 transition-colors" onClick={() => {
+                  window.scrollTo(0, 0);
+                  setTimeout(() => {
+                    const element = document.querySelector('#features');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }, 100);
+                }}>Features</Link>
               </li>
               <li>
-                <a href="#events" className="hover:text-blue-500 transition-colors">Events</a>
+                <Link to="/" className="hover:text-blue-500 transition-colors" onClick={() => {
+                  window.scrollTo(0, 0);
+                  setTimeout(() => {
+                    const element = document.querySelector('#events');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }, 100);
+                }}>Events</Link>
               </li>
               <li>
-                <a href="#about" className="hover:text-blue-500 transition-colors">About</a>
+                <Link to="/" className="hover:text-blue-500 transition-colors" onClick={() => {
+                  window.scrollTo(0, 0);
+                  setTimeout(() => {
+                    const element = document.querySelector('#about');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }, 100);
+                }}>About</Link>
               </li>
               <li>
                 <Link to="/login" className="hover:text-blue-500 transition-colors">Login</Link>
@@ -63,16 +96,24 @@ const Footer = () => {
                 <Link to="/signup" className="hover:text-blue-500 transition-colors">Create Account</Link>
               </li>
               <li>
-                <a href="#events" className="hover:text-blue-500 transition-colors">Browse Events</a>
+                <Link to="/" className="hover:text-blue-500 transition-colors" onClick={() => {
+                  window.scrollTo(0, 0);
+                  setTimeout(() => {
+                    const element = document.querySelector('#events');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }, 100);
+                }}>Browse Events</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-500 transition-colors">Help & Support</a>
+                <Link to="/help-support" className="hover:text-blue-500 transition-colors" onClick={() => window.scrollTo(0, 0)}>Help & Support</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-500 transition-colors">FAQs</a>
+                <Link to="/faqs" className="hover:text-blue-500 transition-colors" onClick={() => window.scrollTo(0, 0)}>FAQs</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-blue-500 transition-colors">Guidelines</a>
+                <Link to="/guidelines" className="hover:text-blue-500 transition-colors" onClick={() => window.scrollTo(0, 0)}>Guidelines</Link>
               </li>
             </ul>
           </div>
@@ -87,11 +128,11 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Mail className="w-5 h-5 mr-2 flex-shrink-0" />
-                <span className="text-sm">support@bmsceeventmanagement.com</span>
+                <span className="text-sm">eventmanagement@bmsce.me</span>
               </li>
               <li className="flex items-center">
                 <Phone className="w-5 h-5 mr-2 flex-shrink-0" />
-                <span className="text-sm">+91 80 2662 1006</span>
+                <span className="text-sm">+91 8026621006</span>
               </li>
             </ul>
           </div>
@@ -104,9 +145,9 @@ const Footer = () => {
               © 2025 BMSCE Event Management. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm">
-              <a href="#" className="hover:text-blue-500 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-blue-500 transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-blue-500 transition-colors">Cookie Policy</a>
+              <Link to="/privacy-policy" className="hover:text-blue-500 transition-colors" onClick={() => window.scrollTo(0, 0)}>Privacy Policy</Link>
+              <Link to="/terms-of-service" className="hover:text-blue-500 transition-colors" onClick={() => window.scrollTo(0, 0)}>Terms of Service</Link>
+              <Link to="/cookie-policy" className="hover:text-blue-500 transition-colors" onClick={() => window.scrollTo(0, 0)}>Cookie Policy</Link>
             </div>
           </div>
         </div>
