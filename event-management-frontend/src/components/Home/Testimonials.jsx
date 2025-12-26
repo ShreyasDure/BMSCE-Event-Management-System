@@ -59,9 +59,10 @@ const Testimonials = () => {
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -8, scale: 1.02 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all relative"
+              transition={{ duration: 0.4, delay: index * 0.1, hover: { duration: 0.3 } }}
+              className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all cursor-pointer relative"
             >
               <Quote className="absolute top-4 right-4 w-8 h-8 text-blue-100" />
               <div className="flex items-start gap-3 mb-4">
