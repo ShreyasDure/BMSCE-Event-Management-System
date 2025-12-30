@@ -247,8 +247,27 @@ const updateEvent = async (req, res) => {
       if (Object.prototype.hasOwnProperty.call(updates, field)) {
         const before = event[field];
         const after = updates[field];
-        const beforeStr = before instanceof Date ? before.toISOString() : String(before ?? '');
-        const afterStr = after instanceof Date ? after.toISOString() : String(after ?? '');
+        
+        // Format dates for human readability
+        const formatDate = (date) => {
+          if (date instanceof Date) {
+            return date.toLocaleString('en-IN', {
+              dateStyle: 'medium',
+              timeStyle: 'short'
+            });
+          }
+          // Also handle string dates by converting to Date first
+          if (typeof date === 'string' && !isNaN(Date.parse(date))) {
+            return new Date(date).toLocaleString('en-IN', {
+              dateStyle: 'medium',
+              timeStyle: 'short'
+            });
+          }
+          return String(date ?? '');
+        };
+        
+        const beforeStr = formatDate(before);
+        const afterStr = formatDate(after);
         if (beforeStr !== afterStr) {
           changes.push({ field, before: beforeStr, after: afterStr });
         }
@@ -266,6 +285,16 @@ const updateEvent = async (req, res) => {
         payload: { eventId: updatedEvent._id.toString(), changes },
         runAt: new Date()
       });
+
+      // If registration deadline changed, reschedule reminders
+      if (changes.some(c => c.field === 'registrationDeadline')) {
+        await scheduleEventJobs(updatedEvent);
+      }
+
+      // If event date changed, reschedule attendance reminders
+      if (changes.some(c => c.field === 'date')) {
+        await scheduleEventJobs(updatedEvent);
+      }
     }
 
     res.status(200).json({

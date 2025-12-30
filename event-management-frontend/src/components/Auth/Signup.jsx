@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserPlus, Mail, Lock, User, Users, ArrowLeft, CreditCard, Key } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, Users, ArrowLeft, CreditCard, Key, Eye, EyeOff } from 'lucide-react';
 import api from '../../utils/axios';
 import { saveAuthData, showToast } from '../../utils/auth';
 
@@ -25,6 +25,8 @@ const Signup = () => {
   });
   const [usnError, setUsnError] = useState('');
   const [organizerCodeError, setOrganizerCodeError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -399,13 +401,20 @@ const Signup = () => {
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
-                  className={`input-field pl-10 ${fieldErrors.password ? 'border-red-500 focus:ring-red-500' : ''}`}
+                  className={`input-field pl-10 pr-10 ${fieldErrors.password ? 'border-red-500 focus:ring-red-500' : ''}`}
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                >
+                  {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                </button>
               </div>
               {fieldErrors.password && (
                 <p className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>
@@ -422,13 +431,20 @@ const Signup = () => {
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   required
-                  className={`input-field pl-10 ${fieldErrors.confirmPassword ? 'border-red-500 focus:ring-red-500' : ''}`}
+                  className={`input-field pl-10 pr-10 ${fieldErrors.confirmPassword ? 'border-red-500 focus:ring-red-500' : ''}`}
                   placeholder="••••••••"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                >
+                  {showConfirmPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                </button>
               </div>
               {fieldErrors.confirmPassword && (
                 <p className="mt-1 text-xs text-red-600">{fieldErrors.confirmPassword}</p>

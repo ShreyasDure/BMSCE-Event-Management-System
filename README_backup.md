@@ -1,14 +1,14 @@
-# BMSCE Event Management System
+﻿# BMSCE Event Management System
 
 A comprehensive event management platform for BMS College of Engineering, allowing students to discover and register for campus events, and organizers to create and manage events.
 
 ## Features
 
-- 🔐 User authentication with BMSCE email verification
-- 📅 Event discovery and registration
-- 👥 Role-based access (Student/Organizer)
-- 📧 Email notifications via Resend
-- 🎨 Modern UI with React and Tailwind CSS
+- ðŸ” User authentication with BMSCE email verification
+- ðŸ“… Event discovery and registration
+- ðŸ‘¥ Role-based access (Student/Organizer)
+- ðŸ“§ Email notifications via Resend
+- ðŸŽ¨ Modern UI with React and Tailwind CSS
 
 ## Tech Stack
 
@@ -95,19 +95,19 @@ npm run dev
 
 ```
 CampusConnekt/
-├── event-management-backend/
-│   ├── config/          # Configuration files
-│   ├── controllers/     # Route controllers
-│   ├── middleware/      # Express middleware
-│   ├── models/          # MongoDB models
-│   ├── routes/          # API routes
-│   └── utils/           # Utility functions
-└── event-management-frontend/
-    ├── src/
-    │   ├── components/  # React components
-    │   ├── pages/       # Page components
-    │   └── utils/       # Frontend utilities
-    └── public/          # Static assets
+â”œâ”€â”€ event-management-backend/
+â”‚   â”œâ”€â”€ config/          # Configuration files
+â”‚   â”œâ”€â”€ controllers/     # Route controllers
+â”‚   â”œâ”€â”€ middleware/      # Express middleware
+â”‚   â”œâ”€â”€ models/          # MongoDB models
+â”‚   â”œâ”€â”€ routes/          # API routes
+â”‚   â””â”€â”€ utils/           # Utility functions
+â””â”€â”€ event-management-frontend/
+    â”œâ”€â”€ src/
+    â”‚   â”œâ”€â”€ components/  # React components
+    â”‚   â”œâ”€â”€ pages/       # Page components
+    â”‚   â””â”€â”€ utils/       # Frontend utilities
+    â””â”€â”€ public/          # Static assets
 ```
 
 ## License

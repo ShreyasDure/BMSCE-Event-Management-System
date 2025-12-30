@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 const EventsHighlight = () => {
   const upcomingEvents = [
     {
-      title: 'BMSCE Tech Fest 2025',
-      date: 'Jan 15-17, 2025',
+      title: 'BMSCE Tech Fest 2026',
+      date: 'Jan 15-17, 2026',
       time: '9:00 AM - 6:00 PM',
       location: 'Main Auditorium',
       attendees: 342,
@@ -16,7 +16,7 @@ const EventsHighlight = () => {
     },
     {
       title: 'Cultural Night',
-      date: 'Jan 20, 2025',
+      date: 'Jan 20, 2026',
       time: '6:00 PM',
       location: 'Open Ground',
       attendees: 180,
@@ -25,8 +25,8 @@ const EventsHighlight = () => {
       categoryColor: 'bg-purple-100 text-purple-700'
     },
     {
-      title: 'CodeHack 2025',
-      date: 'Jan 25, 2025',
+      title: 'CodeHack 2026',
+      date: 'Jan 25, 2026',
       time: '10:00 AM',
       location: 'Computer Lab Block',
       attendees: 156,
